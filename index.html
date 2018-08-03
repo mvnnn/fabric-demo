@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+</head>
+<body>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+        <script src="lib/fabric.js"></script>
+        <script src="lib/text.js"></script>
+        <script src="lib/FileSaver.js"></script>
+        <script src="lib/canvas-toBlob.js"></script>
+
+        <canvas id="canvas" width="1200" height="500" style="border: 1px solid black;"></canvas>
+        <br/>
+        Select Background color:
+  <input id="color-picker" type="color" name="favcolor" value="#ffffff">
+  <br/><br/>
+  Input Text Here:
+<input id="text" type="text" name="fname">
+<button id="add" type="button">add</button>
+&nbsp;&nbsp; Change Selected Text Font Style:
+<select class="select2 font-change" data-type="fontFamily">
+  <option value="Arial">Arial</option>
+  <option value="Impact">Impact</option>
+  <option value="Tahoma">Tahoma</option>
+  <option value="Times New Roman">Times New Roman</option>
+</select>
+&nbsp;&nbsp; Change Selected Text Font Color:
+<input id="font-color-change" data-type="color" type="color" name="favcolor">
+<br/><br/>
+Upload Image:
+<input type="file" id="file"><br />
+<br/>
+Export PNG Image:
+<button id="export" type="button">export</button>
+<br/><br/>
+Delete Selected Object:
+<button id="delete" type="button">delete</button>
+
+        <script>
+            var canvas = new fabric.Canvas('canvas');
+// upload image
+document.getElementById('file').addEventListener("change", function (e) {
+  var file = e.target.files[0];
+  var reader = new FileReader();
+  reader.onload = function (f) {
+    var data = f.target.result;                    
+    fabric.Image.fromURL(data, function (img) {
+      var oImg = img.set({left: 0, top: 0, angle: 0}).scale(0.9);
+      canvas.add(oImg).renderAll();
+      var a = canvas.setActiveObject(oImg);
+      var dataURL = canvas.toDataURL({format: 'png', quality: 0.8});
+    });
+  };
+  
+  reader.readAsDataURL(file);
+});
+
+    //export dashboard png image
+    $("#export").click(function(){
+        $("#canvas").get(0).toBlob(function(blob){
+            saveAs(blob, "dashboard.png");
+        });
+    });
+
+//delete selected object
+$("#delete").click(function(){
+	var activeObject = canvas.getActiveObject();
+    canvas.remove(activeObject);
+});
+
+//Change background color
+document.getElementById("color-picker").addEventListener("change", function (e) {
+    document.getElementById("canvas").style.background = event.target.value;
+});
+        </script>
+</body>
+
+</html>
